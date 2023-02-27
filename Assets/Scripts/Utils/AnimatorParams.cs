@@ -8,15 +8,10 @@ public class AnimatorParams : MonoBehaviour
     /*
      Player baselayer
      */
-    public static string BASE_LAYER_MOVING = "Moving";
-    public static string BASE_LAYER_ATTACKING = "Attacking";
-    public static string BASE_LAYER_ATK_SPEED = "AtkSpeed";
-    public static string BASE_LAYER_DIE = "Die";
-
-    /*
-     Golem enemy baselayer
-     */
-    public static string GOLEM_BASE_LAYER_WALK = "Walk";
-    public static string GOLEM_BASE_LAYER_HIT = "Hit";
-    public static string GOLEM_BASE_LAYER_RAGE = "Rage";
+    public static string MOVING = "Moving";
+    public static string ATTACKING = "Attacking";
+    public static string ATTACK_SPEED = "AttackSpeed";
+    public static string DIE = "Die";
+    public static string RAGE = "Rage";
+    public static string ROLL = "Roll";
 }

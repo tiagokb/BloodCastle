@@ -12,12 +12,25 @@ public class NpcMouseEvent : MonoBehaviour
     private void OnMouseEnter()
     {
 
-        gameObject.GetComponent<MeshRenderer>().material= highLightMaterial;
+        if (gameObject.GetComponent<MeshRenderer>())
+        {
+            gameObject.GetComponent<MeshRenderer>().material = highLightMaterial;
+        } else if (gameObject.GetComponentInChildren<MeshRenderer>())
+        {
+            gameObject.GetComponentInChildren<MeshRenderer>().material = highLightMaterial;
+        }
     }
 
     private void OnMouseExit()
     {
 
-        gameObject.GetComponent<MeshRenderer>().material = defaultMaterial;
+        if (gameObject.GetComponent<MeshRenderer>())
+        {
+            gameObject.GetComponent<MeshRenderer>().material = defaultMaterial;
+        }
+        else if (gameObject.GetComponentInChildren<MeshRenderer>())
+        {
+            gameObject.GetComponentInChildren<MeshRenderer>().material = defaultMaterial;
+        }
     }
 }

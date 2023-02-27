@@ -9,21 +9,22 @@ using static UnityEngine.GraphicsBuffer;
 public class MovementBehaviour : MonoBehaviour
 {
 
-    private NavMeshAgent agent;
+    public NavMeshAgent agent;
     private GameObject player;
 
-    public float rotateSpeedMovement = 0.1f;
-    float rotateVelocity;
-
     private Vector3 originalPosition;
+
+    private Camera mCamera;
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-
         player = GameObject.FindGameObjectWithTag("Player");
-        originalPosition= agent.transform.position;
+
+        agent.updateRotation = false;
+        originalPosition = agent.transform.position;
+
+        mCamera = Camera.main;
     }
 
     internal bool NpcMoviment(float tauntDistance, float stoppingDistance)
@@ -57,20 +58,18 @@ public class MovementBehaviour : MonoBehaviour
         return attacking;
     }
 
-    #nullable enable
-    internal GameObject? PlayerMovement(Camera mainCam, GameObject moveGroundAnimation)
+#nullable enable
+    internal void PlayerMovement(GameObject moveGroundAnimation)
     {
 
-        GameObject? target = null;
-
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mCamera.ScreenPointToRay(Input.mousePosition);
         {
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
 
                 if (Vector3.Distance(hit.point, transform.position) < 0.5f)
                 {
-                    return target;
+                    return;
                 }
 
                 if (hit.collider.gameObject.layer == LayerList.GROUND)
@@ -86,20 +85,25 @@ public class MovementBehaviour : MonoBehaviour
                         cancelAnimation();
                     }
 
-                    target = null;
                     moveTo(hit.point, 0);
-                }
-
-                if (hit.collider.gameObject.layer == LayerList.DESTRUCTIBLE_OBJECT
-                    || hit.collider.gameObject.layer == LayerList.ENEMY)
-                {
-
-                    target = hit.collider.gameObject;
                 }
             }
         }
+    }
 
-        return target;
+    public void DodgeMovement(float dodgeDistance)
+    {
+
+        Ray ray = mCamera.ScreenPointToRay(Input.mousePosition);
+        {
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                agent.ResetPath();
+                transform.LookAt(hit.point);
+                Vector3 newPosition = Vector3.MoveTowards(transform.position, hit.point, dodgeDistance);
+                moveTo(newPosition, 0);
+            }
+        }
     }
 
     private void cancelAnimation()
@@ -110,23 +114,23 @@ public class MovementBehaviour : MonoBehaviour
     public bool targeting(GameObject target, float stoppingDistance)
     {
 
-        bool attacking = false;
+        bool isCloseEnough = false;
 
         if (Vector3.Distance(transform.position, target.transform.position) > stoppingDistance)
         {
 
             moveTo(target.transform.position, stoppingDistance);
-            attacking = false;
+            isCloseEnough = false;
         }
         else
         {
-
             agent.ResetPath();
             transform.LookAt(target.transform.position);
-            attacking = true;
+            agent.velocity = Vector3.zero;
+            isCloseEnough = true;
         }
 
-        return attacking;
+        return isCloseEnough;
     }
 
     public void moveTo(Vector3 desiredPosition, float stoppingDistance)
@@ -148,5 +152,10 @@ public class MovementBehaviour : MonoBehaviour
          Instantiate(moveGroundAnimation, offset, Quaternion.identity);
     }
 
-    
+    internal void Stop()
+    {
+        agent.ResetPath();
+        agent.velocity = Vector3.zero;
+        cancelAnimation();
+    }
 }

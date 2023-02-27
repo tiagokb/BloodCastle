@@ -22,6 +22,11 @@ public class AnimationsController : MonoBehaviour
         animator.SetFloat(animatorParams, value);
     }
 
+    internal void animateFloat(string animatorParams, float value, float motionSmoothTime)
+    {
+        animator.SetFloat(animatorParams, value, motionSmoothTime, Time.deltaTime);
+    }
+
     internal void animateBool(string animatorParams, bool value)
     {
         animator.SetBool(animatorParams, value);
@@ -31,4 +36,6 @@ public class AnimationsController : MonoBehaviour
     {
         animator.SetTrigger(animatorParams);
     }
+
+    
 }

@@ -1,70 +1,91 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerControll : MonoBehaviour
 {
 
-    public Camera mainCamera;
+    public InventoryObject inventory;
     public GameObject moveGroundAnimation;
 
-    private Stats stats;
+    private GameObject target;
+    public GameObject Target
+    {
+        get { return target; }
+        set { target = value; }
+    }
 
     private MovementBehaviour movement;
-    private AnimationsController animationsController;
+    private Animator animator;
+    private PlayerCombat playerCombat;
 
-    private NavMeshAgent agent;
+    private void Awake()
+    {
+        movement = GetComponent<MovementBehaviour>();
+        animator = GetComponent<Animator>();
+        playerCombat = GetComponent<PlayerCombat>();
+    }
 
-    private GameObject target = null;
-
-    private bool attacking = false;
-
-    // Start is called before the first frame update
     private void Start()
     {
-
-        movement = GetComponent<MovementBehaviour>();
-        animationsController= GetComponent<AnimationsController>();
-        agent = GetComponent<NavMeshAgent>();
-        stats= GetComponent<Stats>();
+        playerCombat.TargetedEnemy = Target;
     }
-       
+
     private void Update()
     {
 
-        if (Input.GetKey(KeyCode.Space))
+        playerCombat.TargetedEnemy = Target;
+
+        if (playerCombat.IsAlive() && !playerCombat.isInvulnerable)
         {
 
-            Debug.Log("TODO: roll");
-        }
-
-        if (Input.GetMouseButton(1))
-        {
-            if (stats.life > 0)
-            {
-                target = movement.PlayerMovement(mainCamera, moveGroundAnimation);
-            }
-        }
-
-        if (target != null)
-        {
-            attacking = movement.targeting(target, stats.range);
+            movePlayer();
+            Targeting();
+            MoveAnimation();
         }
         
-        animationsController.animateFloat(AnimatorParams.BASE_LAYER_MOVING, agent.velocity.magnitude);
+    }
 
-        if (target != null && attacking) {
-            animationsController.animateBool(AnimatorParams.BASE_LAYER_ATTACKING, true);
-        } else
+    private void MoveAnimation()
+    {
+        animator.SetFloat(AnimatorParams.MOVING, movement.agent.velocity.magnitude);
+    }
+
+    public void movePlayer()
+    {
+        if (Input.GetMouseButton(1))
         {
-            animationsController.animateBool(AnimatorParams.BASE_LAYER_ATTACKING, false);
+            movement.PlayerMovement(moveGroundAnimation);
         }
+    }
 
-        if (stats.life <= 0)
+    public void Targeting()
+    {
+        
+        if (Target != null 
+            && Target.GetComponent<ITargetable>() != null 
+            && Target.GetComponent<ITargetable>().Type == ObjectType.Item)
         {
-            target = null;
-            animationsController.animateBool(AnimatorParams.BASE_LAYER_DIE, true);
+
+            if (movement.targeting(Target, 1f))
+            {
+
+                PickUpItem();
+            }
+        } 
+    }
+
+    private void PickUpItem()
+    {
+        var item = target.GetComponent<Item>();
+        if (item)
+        {
+
+            inventory.AddItem(item.item, 1);
+            Destroy(target);
         }
     }
 }

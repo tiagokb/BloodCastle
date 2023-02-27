@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class GolemController : MonoBehaviour
 {
 
-    public EnemyStats stats;
+    public Stats stats;
 
     Animator anim;
     NavMeshAgent mNavMeshAgent;
@@ -35,16 +35,16 @@ public class GolemController : MonoBehaviour
     private void Tracking()
     {
 
-        if (player.GetComponent<Animator>().GetBool(AnimatorParams.BASE_LAYER_DIE))
+        if (player.GetComponent<Animator>().GetBool(AnimatorParams.DIE))
         {
-            anim.SetTrigger(AnimatorParams.GOLEM_BASE_LAYER_RAGE);
+            anim.SetTrigger(AnimatorParams.RAGE);
             return;
         }
     }
 
     private void resetAtkTimer()
     {
-        atkTimer = stats.getAtkSpeed();
+        atkTimer = 2f;
     }
 
     private void resetPath()
@@ -57,12 +57,12 @@ public class GolemController : MonoBehaviour
 
     private void TriggerDamage()
     {
-        anim.SetTrigger(AnimatorParams.GOLEM_BASE_LAYER_HIT);
+        anim.SetTrigger(AnimatorParams.ATTACKING);
     }
 
     private void ResetTriggerDamage()
     {
-        anim.ResetTrigger(AnimatorParams.GOLEM_BASE_LAYER_HIT);
+        anim.ResetTrigger(AnimatorParams.ATTACKING);
     }
 
     private void moveTo(Vector3 desiredPosition, float stoppingDistance)
@@ -75,6 +75,6 @@ public class GolemController : MonoBehaviour
 
     public void Hit()
     {
-        player.GetComponent<Stats>().life -= stats.attack;
+        player.GetComponent<Combat>().TakeDamage(stats.GetStatValue(StatsNames.Strength));
     }
 }

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 740cf61680cb6f34fa9f3892e3c68a5f, type: 3}
+  m_Name: Roll
+  m_EditorClassIdentifier: 
+  name: Roll
+  icon: {fileID: 21300000, guid: b066c869b51f9384fa8ac9cce36b4648, type: 3}
+  type: 3
+  cooldownTime: 5
+  activeTime: 0.85
